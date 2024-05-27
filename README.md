@@ -5,4 +5,13 @@ This project implements the 3D lattice-Boltzmann model for the Maxwell equations
 ## Requirements
 
 - **C++ compiler**
+- **MPI** (`mpic++`, `mpirun`)
 - **Make utility**
+
+## Running
+
+```
+make run NP=4
+```
+
+The lattice is split in slabs along z, one per MPI rank; output goes to `pulse.dat`.

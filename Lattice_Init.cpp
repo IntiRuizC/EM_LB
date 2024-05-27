@@ -1,5 +1,13 @@
 #include "Lattice.hpp"
 LatticeBoltzmann::LatticeBoltzmann(void){
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    left = (rank - 1 + size) % size; right = (rank + 1) % size;
+    Nz = Lz / size + (rank < Lz % size ? 1 : 0);
+    z_start = rank * (Lz / size) + (rank < Lz % size ? rank : Lz % size);
+    f.resize(Lx*Ly*(Nz+2)*3*4*2*2); f_new.resize(f.size());
+    f_0.resize(Lx*Ly*(Nz+2)*2); f_0_new.resize(f_0.size());
+
     v0.load(0,0,0);
 
     V[0][0][0]=1;  V[0][1][0]=1;  V[0][2][0]=0;
@@ -43,7 +51,7 @@ LatticeBoltzmann::LatticeBoltzmann(void){
 }
 
 double LatticeBoltzmann::epsr(int ix, int iy, int iz){
-    return 0.5*(eps1+eps2) + 0.5*(eps2-eps1)*tanh(iz-Lz/2.0);
+    return 0.5*(eps1+eps2) + 0.5*(eps2-eps1)*tanh(zg(iz)-Lz/2.0);
 }
 
 double LatticeBoltzmann::mur(int ix, int iy, int iz){

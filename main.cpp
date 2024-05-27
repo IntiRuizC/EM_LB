@@ -1,7 +1,8 @@
 #include "Lattice.hpp"
 
 
-int main(void){
+int main(int argc, char **argv){
+    MPI_Init(&argc, &argv);
     LatticeBoltzmann pulse;
 
     int t;
@@ -20,7 +21,10 @@ int main(void){
     double Et, Er;
     pulse.Peaks(Et, Er);
     double n = sqrt(eps2/eps1);
-    std::cerr<<"transmitted: "<<Et/E0<<" theory: "<<2/(n+1)<<std::endl;
-    std::cerr<<"reflected:   "<<-Er/E0<<" theory: "<<(n-1)/(n+1)<<std::endl;
+    if (pulse.Rank() == 0){
+        std::cerr<<"transmitted: "<<Et/E0<<" theory: "<<2/(n+1)<<std::endl;
+        std::cerr<<"reflected:   "<<-Er/E0<<" theory: "<<(n-1)/(n+1)<<std::endl;
+    }
+    MPI_Finalize();
     return 0;
 }
